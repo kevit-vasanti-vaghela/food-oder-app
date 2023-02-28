@@ -8,10 +8,15 @@ import MealItem from './MealItem.js/MealItem';
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  // const [meals, setMeals] = useState([])
+  const [httpError, setHttpError] = useState(null)
   useEffect(() => {
     const fetchMeals = async () => {
       const response = await fetch('https://custom-hook-and-http-default-rtdb.firebaseio.com/meals.json')
+
+      if(!response.ok) {
+        throw new Error('Something went Wrong!')
+      }
+
       const responseData = await response.json()
 
       const loadedMeals = []
@@ -30,14 +35,25 @@ const AvailableMeals = () => {
       setIsLoading(false)
     }
     setTimeout(() => {
-      fetchMeals()
+      fetchMeals().catch(error => {
+        setIsLoading(false)
+        setHttpError(error.message)
+      })
     },500)
   },[])
 
     if (isLoading) {
       return (
-        <section className={classes.Mealsloading}>
+        <section className={classes.MealsLoading}>
           <p>Loading...</p>
+        </section>
+      )
+    }
+
+    if (httpError) {
+      return (
+        <section className={classes.MealsError}>
+          <p>{httpError}</p>
         </section>
       )
     }
