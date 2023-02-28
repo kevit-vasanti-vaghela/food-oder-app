@@ -7,6 +7,8 @@ import MealItem from './MealItem.js/MealItem';
 
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  // const [meals, setMeals] = useState([])
   useEffect(() => {
     const fetchMeals = async () => {
       const response = await fetch('https://custom-hook-and-http-default-rtdb.firebaseio.com/meals.json')
@@ -25,9 +27,21 @@ const AvailableMeals = () => {
       }
 
       setMeals(loadedMeals)
+      setIsLoading(false)
     }
-     fetchMeals()
+    setTimeout(() => {
+      fetchMeals()
+    },500)
   },[])
+
+    if (isLoading) {
+      return (
+        <section className={classes.Mealsloading}>
+          <p>Loading...</p>
+        </section>
+      )
+    }
+
 
     const mealsList = meals.map(meal => (
         <MealItem 
